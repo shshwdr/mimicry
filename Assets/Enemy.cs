@@ -25,8 +25,33 @@ public class Enemy : AffectableItem
         transform.position = patrolPoints[0];
         
         base.Start();
+        updateIndicator();
     }
 
+    void updateIndicator()
+    {
+        var nextPatrolId = patrolId + (patrolRevert ? -1 : 1);
+        var nextP = patrolPoints[nextPatrolId];
+        var dir = (nextP - transform.position).normalized;
+
+        if (dir.x > 0.9f)
+        {
+            
+            indicator.transform.eulerAngles = new Vector3(0, 0, 0);
+        }else if (dir.x < -0.9f)
+        {
+            
+            indicator.transform.eulerAngles = new Vector3 (0, 0, 180);
+        }else if (dir.y < -0.9f)
+        {
+            
+            indicator.transform.eulerAngles = new Vector3 (0, 0, -90);
+        }else if (dir.y >0.9f)
+        {
+            
+            indicator.transform.eulerAngles = new Vector3 (0, 0, 90);
+        }
+    }
     Vector3 nextPosition()
     {
         var nextPatrolId = patrolId + (patrolRevert ? -1 : 1);
@@ -42,6 +67,8 @@ public class Enemy : AffectableItem
                 patrolRevert = !patrolRevert;
             }
         }
+
+        updateIndicator();
         return nextMove;
     }
     public override void enemyMove()
