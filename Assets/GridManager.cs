@@ -23,7 +23,7 @@ public class GridManager : Singleton<GridManager>
     public float Scale = tileSize;
     public GameObject GridPrefab;
     public Dictionary<Vector2Int, GameObject> GridArray = new Dictionary<Vector2Int, GameObject>();
-
+    public Mimicry player;
     void SetDistance(int fromX, int fromY)
     {
         // reset the current grid to make them all 'unvisited'
@@ -112,73 +112,37 @@ public class GridManager : Singleton<GridManager>
 
     }
 
-    public AffectableItem getAffectedOnDir(int x, int y, Direction direction)
+    
+    public bool hasChestOnDir(Vector2Int pos, Vector2Int direction)
     {
         var i = 0;
         AffectableItem hitItem;
         while (i < 100)
         {
             i++;
-            var res = ShootDirection(x, y, direction,out hitItem,false, false,true);
-            if (hitItem) {
-                return hitItem;
-            }
-            if(res == null)
-            {
-                return null;
-            }
-            x = res.X;
-            y = res.Y;
-        }
-        return null;
-    }
-    public AffectableItem getHealthyOnDir(int x, int y, Direction direction)
-    {
-        var i = 0;
-        AffectableItem hitItem;
-        while (i < 100)
-        {
-            i++;
-            //origin.x, origin.y, dir, out hitItem, isInfected, isInfected, true);
-            var res = ShootDirection(x, y, direction,out hitItem,true, true,true);
-            if (hitItem) {
-                return hitItem;
-            }
-            if(res == null)
-            {
-                return null;
-            }
-            x = res.X;
-            y = res.Y;
-        }
-        return null;
-    }
-    public bool hasAffectedOnDir(int x, int y, Direction direction)
-    {
-        var i = 0;
-        AffectableItem hitItem;
-        while (i < 100)
-        {
-            i++;
-            var res = ShootDirection(x, y, direction,out hitItem,false, false,true);
-            if (hitItem) {
+            var res = ShootDirection(pos, direction,out hitItem,false, false,true);
+            pos += direction;
+            if (hitItem && hitItem is Mimicry) {
                 return true;
+            }
+
+            if (hitItem)
+            {
+                return false;
             }
             if(res == null)
             {
                 return false;
             }
-            x = res.X;
-            y = res.Y;
         }
         return false;
     }
     
-    public GridStats ShootDirection(int x, int y, Direction direction, out AffectableItem hitItem, bool throughCorpse, bool hitHuman, bool throughWindow)
+    public GridStats ShootDirection(Vector2Int pos, Vector2Int direction, out AffectableItem hitItem, bool throughCorpse, bool hitHuman, bool throughWindow)
     {
         hitItem = null;
     
-        var target = new Vector2Int(x, y) + directionToVector2Int(direction);
+        var target = pos + (direction);
         if (!GridArray.ContainsKey(target))
         {
             return null;
@@ -187,40 +151,13 @@ public class GridManager : Singleton<GridManager>
         {
             if (item.pos == target)
             {
-                if (item.isDead)
-                {
-                    if (throughCorpse)
-                    {
-    
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                // else if (item is Human human && human.isProtected && human.isInFront( x-human.pos.x,y-human.pos.y))
-                // {
-                //     return null;
-                // }
-                else if (!hitHuman && !item.isAffected)
-                {
-                    return null;
-                }
-                else
-                {
-                    
-                    hitItem = item;
-                    return null;
-                }
+                
+                hitItem = item;
             }
         }
         var gridStatus = GridArray[target];
         if (gridStatus)
         {
-            if (!throughWindow && gridStatus.GetComponent<GridStats>().type == "Window")
-            {
-                return null;
-            }
     
             return gridStatus.GetComponent<GridStats>();
         }
@@ -303,6 +240,11 @@ public class GridManager : Singleton<GridManager>
     {
         affectableItems.Add(item);
         allItems.Add(item);
+    }
+    public void RemoveAffectable(AffectableItem item)
+    {
+        affectableItems.Remove(item);
+        allItems.Remove(item);
     }
 
     bool TestDirection(int x, int y, int step, Direction direction)
@@ -399,6 +341,7 @@ public class GridManager : Singleton<GridManager>
     private void Start()
     {
         InitiateGrids();
+       player = GameObject.FindObjectOfType<Mimicry>();
     }
 
     public void InitiateGrids()

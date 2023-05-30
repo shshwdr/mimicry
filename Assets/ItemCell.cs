@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemCell : MonoBehaviour
+public class ItemCell : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public GameObject selectOb;
 
@@ -12,16 +13,24 @@ public class ItemCell : MonoBehaviour
     public string itemName;
     public int amount;
     private Button button;
-    public void init((string, int) pair)
+    private InventoryMenu menu;
+    private ItemInfo info;
+    public void init((string, int) pair,InventoryMenu m)
     {
         itemName = pair.Item1;
         amount = pair.Item2;
+        info = CSVDataManager.Instance.itemInfo(itemName);
+        menu = m;
         gameObject.SetActive(true);
         render.sprite = Resources.Load<Sprite>("items/"+itemName);
         button = GetComponentInChildren<Button>();
         button.onClick.AddListener(() =>
             {
-Inventory.Instance.selectItem(itemName);
+                if (AffectableManager.Instance.canAction)
+                {
+                    
+                    Inventory.Instance.selectItem(itemName);
+                }
             }
         );
         if (Inventory.Instance.selectedItem == itemName)
@@ -39,5 +48,16 @@ Inventory.Instance.selectItem(itemName);
     void Update()
     {
         
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        menu.showDesc(info);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+       menu.hideDesc();
+       ;
     }
 }

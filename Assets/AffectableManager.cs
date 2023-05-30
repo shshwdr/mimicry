@@ -86,12 +86,15 @@ public class AffectableManager : Singleton<AffectableManager>
             }
         }
 
-            updateEnemiesMove();
-            yield return new WaitForSeconds(moveTime);
+            yield return StartCoroutine(updateEnemiesMove());
+            
+            
                 
         keyDown = KeyCode.None;
 
         canAction = true;
+        
+        Inventory.Instance.addItem("stone");
     }
     IEnumerator moveAllItems(List<AffectableItem> affectedItems, Direction dir)
     {
@@ -216,13 +219,24 @@ public class AffectableManager : Singleton<AffectableManager>
 
     
 
-    void updateEnemiesMove()
+    IEnumerator updateEnemiesMove()
     {
         foreach (var item in GridManager.Instance.affectableItems)
         {
             if (!item.isDead)
             {
                 item.enemyMove();
+            }
+        }
+        
+        yield return new WaitForSeconds(moveTime);
+        
+        
+        foreach (var item in GridManager.Instance.affectableItems.ToArray())
+        {
+            if (!item.isDead)
+            {
+                yield return StartCoroutine(item.enemyChestCheck());
             }
         }
     }

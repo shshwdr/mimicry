@@ -7,6 +7,7 @@ public class Inventory : Singleton<Inventory>
 {
     public List<string> itemList;
 
+    
     public Dictionary<string, int> itemDict = new Dictionary<string, int>();
 
     public  string selectedItem;
@@ -17,6 +18,7 @@ public class Inventory : Singleton<Inventory>
         {
             itemDict[item] = 1;
         }   
+        DontDestroyOnLoad(gameObject);
     }
 
     public List<(string, int)> itemPair
@@ -36,7 +38,7 @@ public class Inventory : Singleton<Inventory>
     }
     public void addItem(string item)
     {
-        if (itemDict.ContainsKey(item) && itemDict[item] > 0)
+        if (itemDict.ContainsKey(item))
         {
             itemDict[item]++;
         }

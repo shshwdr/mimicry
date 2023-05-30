@@ -1,6 +1,6 @@
-﻿name
-stone
-herb
-mild
-meat
-bread
+﻿name,desc
+stone,just a stone you can find everywhere
+herb,smells fresh
+milk,"taste good, good for fusion"
+meat,yummy
+bread,"taste bland, good for fusion"

@@ -1,19 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
-public class AffectableItem : MonoBehaviour
+public class AffectableItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public bool isAffected = false;
 
+    public GameObject dialoguePanel;
+    public TMP_Text dialogueLabel;
     public bool isDestroyed = false;
 
     public float moveTime = 0.1f;
     //public Button actionButton;
-    public GameObject renderer;
+    public SpriteRenderer renderer;
     public bool isDead = false;
     public Direction dir = Direction.right;
 
@@ -49,6 +53,10 @@ public class AffectableItem : MonoBehaviour
         // return false;
     }
 
+    public virtual IEnumerator enemyChestCheck()
+    {
+        yield return null;
+    }
     public bool isInFront(int x, int y)
     {
         var ddir = GridManager.directionToVector2Int(dir);
@@ -182,4 +190,13 @@ public class AffectableItem : MonoBehaviour
         yield return new WaitForSeconds(moveTime);
     }
 
+    public virtual void OnPointerEnter(PointerEventData eventData)
+    {
+        dialoguePanel.SetActive(true);
+    }
+
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+        dialoguePanel.SetActive(false);
+    }
 }
