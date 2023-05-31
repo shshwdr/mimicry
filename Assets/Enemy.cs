@@ -161,12 +161,15 @@ public class Enemy : AffectableItem
         Debug.Log("A key or mouse click has been detected");
     }
 
+    private bool isMovingBack = false;
+    private Vector2Int backPos;
     public override IEnumerator enemyChestCheck()
     {
         if (canSeeChest(true) || pos == GridManager.Instance.player.pos)
         {
             //move to chest
-
+            backPos = pos;
+            pos = GridManager.Instance.player.pos;
             transform.DOMove(GridManager.Instance.player.transform.position, moveTime);
             yield return new WaitForSeconds(moveTime);
             //show dialogue
@@ -188,8 +191,18 @@ public class Enemy : AffectableItem
 
                 yield return WaitForAnyKey();
                 dialoguePanel.SetActive(false);
-                transform.DOMove(GridManager.indexToPosition(pos), moveTime);
-                yield return new WaitForSeconds(moveTime);
+                if (backPos != GridManager.Instance.player.pos)
+                {
+                    
+                    var nextPatrolId = patrolId + (patrolRevert ? -1 : 1);
+                    patrolId = nextPatrolId;
+                    patrolRevert = !patrolRevert;
+                    updateIndicator();
+                }
+                
+                
+                //transform.DOMove(GridManager.indexToPosition(pos), moveTime);
+                //yield return new WaitForSeconds(moveTime);
             }
         }
     }
