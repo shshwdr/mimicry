@@ -11,6 +11,9 @@ public class InventoryMenu : MonoBehaviour
     public GameObject descPanel;
     public TMP_Text descLabel;
     public Transform contentMenu;
+
+    private ItemInfo draggingInfo;
+    private ItemInfo hoveringInfo;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,13 +41,36 @@ public class InventoryMenu : MonoBehaviour
 
     public void showDesc(ItemInfo info)
     {
-        
+        hoveringInfo = info;
         descPanel.SetActive(true);
-        descLabel.text = info.desc;
+        if (draggingInfo != null && draggingInfo != info)
+        {
+            descLabel.text = draggingInfo.name+" + "+info.name+" combine result: "+CSVDataManager.Instance.fusionResultName(draggingInfo.name,info.name);
+        }
+        else
+        {
+            descLabel.text = info.desc;
+        }
     }
 
     public void hideDesc()
     {
+        hoveringInfo = null;
         descPanel.SetActive(false);
+    }
+
+    public void startDrag(ItemInfo info)
+    {
+        draggingInfo = info;
+    }
+
+    public void finishDrag(ItemInfo info)
+    {
+        if (hoveringInfo != null)
+        {
+            CSVDataManager.Instance.fusion(hoveringInfo.name,info.name);
+        }
+        
+        draggingInfo = null;
     }
 }

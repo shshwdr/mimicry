@@ -27,7 +27,11 @@ public class Enemy : AffectableItem
         info = CSVDataManager.Instance.enemyInfo(enemyType);
         foreach (Transform point in patrolPointsParent)
         {
-            patrolPoints.Add(point.position);
+            if (point.gameObject.activeInHierarchy)
+            {
+                patrolPoints.Add(point.position);
+                
+            }
         }
 
         transform.position = patrolPoints[0];
