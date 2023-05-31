@@ -101,9 +101,9 @@ public class GridManager : Singleton<GridManager>
         return new Vector2((int)(pos.Item1 /tileSize- 0.5f), (int)(pos.Item2 /tileSize - 0.5f));
 
     }
-    public static Vector3 PositionToIndex(Vector3 pos)
+    public static Vector2Int PositionToIndex(Vector3 pos)
     {
-        return new Vector2((int)(pos.x / tileSize - 0.5f), (int)(pos.y / tileSize - 0.5f));
+        return new Vector2Int((int)(pos.x / tileSize - 0.5f), (int)(pos.y / tileSize - 0.5f));
 
     }
     public static Vector2Int PositionToIndexPair(Vector3 pos)
@@ -214,10 +214,10 @@ public class GridManager : Singleton<GridManager>
         }
         foreach(var item in affectableItems)
         {
-            // if(item.pos == target)
-            // {
-            //     return null;
-            // }
+            if(item.pos == target)
+            {
+                return null;
+            }
         }
         var gridStatus = GridArray[target];
         if (gridStatus)

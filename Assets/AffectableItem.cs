@@ -176,9 +176,29 @@ public class AffectableItem : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public virtual IEnumerator MoveEnumerator(Vector2Int position)
     {
+        foreach (var item in GridManager.Instance.affectableItems)
+        {
+            if (item is Enemy enemy && enemy.canSeeChest(false))
+            {
+                var dir = GridManager.indexToPosition(position) - GridManager.indexToPosition(pos);
+                transform.DOMove(GridManager.indexToPosition(pos) + dir*0.3f, moveTime*0.3f);
+                yield return StartCoroutine(enemy.catchMimicry());
+                yield break;
+            }
+        }
+        
         
         pos = position;
         transform.DOMove(GridManager.indexToPosition(pos), moveTime);
+        
+        foreach (var item in GridManager.Instance.affectableItems)
+        {
+            if (item is Enemy enemy && enemy.canSeeChest(false))
+            {
+                yield return StartCoroutine(enemy.catchMimicry());
+                yield break;
+            }
+        }
         
         
         // AudioManager.Instance.PlayOneShot(FMODEvents.Instance.walk_woosh, transform.position);

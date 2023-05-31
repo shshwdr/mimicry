@@ -30,7 +30,6 @@ public class Enemy : AffectableItem
             if (point.gameObject.activeInHierarchy)
             {
                 patrolPoints.Add(point.position);
-                
             }
         }
 
@@ -48,46 +47,45 @@ public class Enemy : AffectableItem
 
         if (dir.x > 0.9f)
         {
-            
             indicator.transform.eulerAngles = new Vector3(0, 0, 0);
-        }else if (dir.x < -0.9f)
+        }
+        else if (dir.x < -0.9f)
         {
-            
-            indicator.transform.eulerAngles = new Vector3 (0, 0, 180);
-        }else if (dir.y < -0.9f)
+            indicator.transform.eulerAngles = new Vector3(0, 0, 180);
+        }
+        else if (dir.y < -0.9f)
         {
-            
-            indicator.transform.eulerAngles = new Vector3 (0, 0, -90);
-        }else if (dir.y >0.9f)
+            indicator.transform.eulerAngles = new Vector3(0, 0, -90);
+        }
+        else if (dir.y > 0.9f)
         {
-            
-            indicator.transform.eulerAngles = new Vector3 (0, 0, 90);
+            indicator.transform.eulerAngles = new Vector3(0, 0, 90);
         }
     }
 
-    bool canSeeChest()
+    public bool canSeeChest(bool checkPreviousDir)
     {
-        
         var nextPatrolId = patrolId + (patrolRevert ? -1 : 1);
 
         var nextP = patrolPoints[nextPatrolId];
-        var dir = lastDir;//(nextP - transform.position).normalized;
+        var dir = lastDir; //(nextP - transform.position).normalized;
 
-        var normalizedDir = new Vector2Int((int)math.round( dir.x), (int)math.round( dir.y));
-        
+        var normalizedDir = new Vector2Int((int)math.round(dir.x), (int)math.round(dir.y));
 
-        
-        if (GridManager.Instance.hasChestOnDir(pos, normalizedDir))
+        if (checkPreviousDir)
         {
-            return true;
+            
+            if (GridManager.Instance.hasChestOnDir(pos, normalizedDir))
+            {
+                return true;
+            }
         }
-        
-        dir =(nextP - transform.position).normalized;
 
-        normalizedDir = new Vector2Int((int)math.round( dir.x), (int)math.round( dir.y));
-        
+        dir = (nextP - transform.position).normalized;
 
-        
+        normalizedDir = new Vector2Int((int)math.round(dir.x), (int)math.round(dir.y));
+
+
         if (GridManager.Instance.hasChestOnDir(pos, normalizedDir))
         {
             return true;
@@ -96,7 +94,20 @@ public class Enemy : AffectableItem
         return false;
     }
 
+    public IEnumerator catchMimicry()
+    {
+        transform.DOMove(GridManager.indexToPosition( GridManager.Instance.player.pos), moveTime);
+        yield return new WaitForSeconds(moveTime);
+        //show dialogue
+        var react = CSVDataManager.Instance.enemyReactToItem(enemyType, Inventory.Instance.selectedItem);
+        dialoguePanel.SetActive(true);
+        dialogueLabel.text = enemyType + " spotted you!";
+        yield return WaitForAnyKey();
+        LevelManager.Instance.RestartLevel();
+    }
+
     private Vector3 lastDir;
+
     Vector3 moveToNextPosition()
     {
         var nextPatrolId = patrolId + (patrolRevert ? -1 : 1);
@@ -104,6 +115,13 @@ public class Enemy : AffectableItem
         var nextP = patrolPoints[nextPatrolId];
         lastDir = (nextP - transform.position).normalized;
         var nextMove = transform.position + lastDir;
+
+        // var nextPos = GridManager.PositionToIndex(nextMove);
+        // if (GridManager.Instance.player.pos == nextPos)
+        // {
+        //     return transform.position;
+        // }
+        
         if ((nextMove - nextP).magnitude <= 0.3f)
         {
             patrolId = nextPatrolId;
@@ -122,33 +140,33 @@ public class Enemy : AffectableItem
         GridManager.Instance.RemoveAffectable(this);
         Destroy(gameObject);
     }
-    
+
     public override void enemyMove()
     {
         base.enemyMove();
 
-        var nextP =  moveToNextPosition();
+        var nextP = moveToNextPosition();
         pos = GridManager.PositionToIndexPair(nextP);
-        
+
         transform.DOMove(GridManager.indexToPosition(pos), moveTime);
-
-
     }
+
     private IEnumerator WaitForAnyKey()
     {
         while (!Input.anyKeyDown)
         {
-            yield return null;  // Wait until next frame
+            yield return null; // Wait until next frame
         }
+
         Debug.Log("A key or mouse click has been detected");
     }
+
     public override IEnumerator enemyChestCheck()
     {
-        
-        if (canSeeChest())
+        if (canSeeChest(true) || pos == GridManager.Instance.player.pos)
         {
             //move to chest
-            
+
             transform.DOMove(GridManager.Instance.player.transform.position, moveTime);
             yield return new WaitForSeconds(moveTime);
             //show dialogue
@@ -161,22 +179,18 @@ public class Enemy : AffectableItem
                 destroy();
                 Inventory.Instance.removeItem(Inventory.Instance.selectedItem);
                 Inventory.Instance.selectedItem = "";
-                
+
                 Inventory.Instance.addItem(info.drop);
             }
             else
             {
-                
                 dialogueLabel.text = info.disappoint;
-                
+
                 yield return WaitForAnyKey();
                 dialoguePanel.SetActive(false);
                 transform.DOMove(GridManager.indexToPosition(pos), moveTime);
                 yield return new WaitForSeconds(moveTime);
             }
-            
-            
-            
         }
     }
 
@@ -194,7 +208,5 @@ public class Enemy : AffectableItem
     // Update is called once per frame
     void Update()
     {
-        
     }
-    
 }
