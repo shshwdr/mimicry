@@ -102,6 +102,8 @@ public class Enemy : AffectableItem
         var react = CSVDataManager.Instance.enemyReactToItem(enemyType, Inventory.Instance.selectedItem);
         dialoguePanel.SetActive(true);
         dialogueLabel.text = enemyType + " spotted you!";
+        
+        SFXManager.Instance.PlayerSFX(SFXManager.Instance.boxDie);
         yield return WaitForAnyKey();
         LevelManager.Instance.RestartLevel();
     }
@@ -177,9 +179,14 @@ public class Enemy : AffectableItem
             dialoguePanel.SetActive(true);
             if (react != null)
             {
+                
+                SFXManager.Instance.PlayerSFX(SFXManager.Instance.positive);
                 dialogueLabel.text = react.words;
                 yield return WaitForAnyKey();
                 destroy();
+                
+                //SFXManager.Instance.PlayerSFX(SFXManager.Instance.enemyDie);
+                SFXManager.Instance.PlayerSFX(SFXManager.Instance.boxAttack);
                 Inventory.Instance.removeItem(Inventory.Instance.selectedItem);
                 Inventory.Instance.selectedItem = "";
 
@@ -187,6 +194,7 @@ public class Enemy : AffectableItem
             }
             else
             {
+                SFXManager.Instance.PlayerSFX(SFXManager.Instance.negative);
                 dialogueLabel.text = info.disappoint;
 
                 yield return WaitForAnyKey();

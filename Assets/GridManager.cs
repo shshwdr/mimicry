@@ -347,6 +347,7 @@ public class GridManager : Singleton<GridManager>
     public void InitiateGrids()
     {
         Wall.Instance.init();
+        Stair.Instance.init();
         // Trap.Instance.init();
         // Target.Instance.init();
         // Window.Instance.init();

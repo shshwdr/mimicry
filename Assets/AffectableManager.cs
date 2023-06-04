@@ -176,6 +176,7 @@ public class AffectableManager : Singleton<AffectableManager>
 
         if (res != null)
         {
+            SFXManager.Instance.PlayerSFX(SFXManager.Instance.boxMove);
             yield return StartCoroutine(item.MoveEnumerator(new Vector2Int(res.X,res.Y)));
             // if (res.type == "Window" && !(item is Dog))
             // {
@@ -189,10 +190,10 @@ public class AffectableManager : Singleton<AffectableManager>
             // //     RecordFinishLevelCommand();
             // // }
             // // else 
-            // if (res.type == "Trap")
-            // {
-            //     item.RecordTrapTrigger(res);
-            // }
+            if (res.type == "Stair")
+            {
+                SFXManager.Instance.PlayerSFX(SFXManager.Instance.finishLevel);
+            }
             // else if (res.type == "HumanMask" && item is Human human3 && !human3.isProtected)
             // {
             //     item.RecordCollectMask(res);
