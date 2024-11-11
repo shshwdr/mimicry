@@ -19,6 +19,7 @@ public class Inventory : Singleton<Inventory>
             itemDict[item] = 1;
         }   
         DontDestroyOnLoad(gameObject);
+        CanvasMenu.Instance.tutorial.SetActive(true);
     }
 
     public List<(string, int)> itemPair

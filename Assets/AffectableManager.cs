@@ -193,6 +193,8 @@ public class AffectableManager : Singleton<AffectableManager>
             if (res.type == "Stair")
             {
                 SFXManager.Instance.PlayerSFX(SFXManager.Instance.finishLevel);
+                
+                CanvasMenu.Instance.gameEnd.SetActive(true);
             }
             // else if (res.type == "HumanMask" && item is Human human3 && !human3.isProtected)
             // {
